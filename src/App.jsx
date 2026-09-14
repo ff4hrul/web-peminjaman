@@ -52,10 +52,12 @@ export default function App() {
   };
 
   // ==========================
-  // Fetch Riwayat
+  // Fetch Riwayat / Approval
   // ==========================
   const fetchHistory = async () => {
     const token = sessionStorage.getItem('token');
+
+    if (!token) return;
 
     try {
       const res = await fetch(`${API_URL}/borrows`, {
@@ -67,6 +69,8 @@ export default function App() {
       if (res.ok) {
         const data = await res.json();
         setBorrowHistory(data);
+      } else {
+        console.error('Gagal mengambil riwayat:', res.status);
       }
     } catch (err) {
       console.error(err);
@@ -74,13 +78,24 @@ export default function App() {
     }
   };
 
+  // ==========================
   // Load data setelah login
+  // ==========================
   useEffect(() => {
     if (user) {
       fetchItems();
       fetchHistory();
     }
   }, [user]);
+
+  // ==========================
+  // Refresh ketika halaman Approval dibuka
+  // ==========================
+  useEffect(() => {
+    if (user && user.role === 'admin' && currentPage === 'approval') {
+      fetchHistory();
+    }
+  }, [currentPage, user]);
 
   // ==========================
   // Ajukan Pinjam
@@ -105,7 +120,9 @@ export default function App() {
 
       if (res.ok) {
         toast.success('Permintaan berhasil dikirim');
-        fetchHistory();
+
+        // Ambil ulang data dari database
+        await fetchHistory();
       } else {
         toast.error(data.message);
       }
@@ -133,8 +150,9 @@ export default function App() {
 
       if (res.ok) {
         toast.success('Barang berhasil dikembalikan');
-        fetchItems();
-        fetchHistory();
+
+        await fetchItems();
+        await fetchHistory();
       } else {
         toast.error(data.message);
       }
@@ -162,8 +180,9 @@ export default function App() {
 
       if (res.ok) {
         toast.success('Peminjaman berhasil disetujui');
-        fetchItems();
-        fetchHistory();
+
+        await fetchItems();
+        await fetchHistory();
       } else {
         toast.error(data.message);
       }
@@ -181,6 +200,8 @@ export default function App() {
     sessionStorage.removeItem('user');
 
     setUser(null);
+    setItems([]);
+    setBorrowHistory([]);
     setCurrentPage('dashboard');
 
     toast.success('Berhasil logout');
@@ -222,4 +243,3 @@ export default function App() {
     </div>
   );
 }
-
