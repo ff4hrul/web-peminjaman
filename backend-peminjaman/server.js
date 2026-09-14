@@ -13,34 +13,40 @@ const borrowRoutes = require('./routes/borrowRoutes');
 const authRoutes = require('./routes/authRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 8000;
 
 app.use(cors());
 app.use(express.json());
 
+// Routes
 app.use('/api/items', itemRoutes);
 app.use('/api/borrows', borrowRoutes);
 app.use('/api/auth', authRoutes);
 
 // Health check
 app.get('/', (req, res) => {
-  res.json({ status: 'OK' });
+  res.json({
+    status: 'OK',
+    message: 'Backend Peminjaman berjalan',
+  });
 });
 
-// Buka port TERLEBIH DAHULU
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Inisialisasi database
+let databaseInitialized = false;
 
-// Koneksi database
-(async () => {
+async function initializeDatabase() {
+  if (databaseInitialized) return;
+
   try {
     await db.authenticate();
     console.log('Database berhasil terhubung.');
 
     await db.sync({ alter: true });
 
+    // =========================
+    // Seed Barang
+    // =========================
     const totalItem = await Item.count();
+
     if (totalItem === 0) {
       await Item.bulkCreate([
         {
@@ -56,10 +62,15 @@ app.listen(PORT, '0.0.0.0', () => {
           available: 1,
         },
       ]);
+
       console.log('Data barang awal berhasil ditambahkan.');
     }
 
+    // =========================
+    // Seed User
+    // =========================
     const totalUser = await User.count();
+
     if (totalUser === 0) {
       const adminPassword = await bcrypt.hash('admin123', 10);
       const userPassword = await bcrypt.hash('user123', 10);
@@ -78,9 +89,28 @@ app.listen(PORT, '0.0.0.0', () => {
           role: 'user',
         },
       ]);
+
       console.log('Akun awal berhasil dibuat.');
     }
-  } catch (err) {
-    console.error('DATABASE ERROR:', err);
+
+    databaseInitialized = true;
+  } catch (error) {
+    console.error('DATABASE ERROR:', error);
+    throw error;
   }
-})();
+}
+
+// Export untuk Vercel
+module.exports = async (req, res) => {
+  try {
+    await initializeDatabase();
+    return app(req, res);
+  } catch (error) {
+    console.error('SERVER ERROR:', error);
+
+    return res.status(500).json({
+      message: 'Server gagal terhubung ke database',
+      error: error.message,
+    });
+  }
+};
