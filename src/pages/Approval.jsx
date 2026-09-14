@@ -2,7 +2,7 @@ import React from 'react';
 import toast from 'react-hot-toast';
 import { CheckCircle } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Approval({ borrowHistory, refresh }) {
   const token = localStorage.getItem('token');

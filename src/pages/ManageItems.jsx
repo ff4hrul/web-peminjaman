@@ -3,7 +3,7 @@ import { Plus, Search, Pencil, Trash2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ConfirmDialog from '../components/ConfirmDialog';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ManageItems({ items, refreshItems }) {
   const token = localStorage.getItem('token');
