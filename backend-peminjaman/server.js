@@ -1,7 +1,9 @@
 require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+
 const db = require('./Config/database');
 
 const itemRoutes = require('./routes/itemRoutes');
@@ -11,25 +13,30 @@ const authRoutes = require('./routes/authRoutes');
 const Item = require('./models/Item');
 const User = require('./models/User');
 
-// Tambahkan ini
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 8000;
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
+// Routes
 app.use('/api/items', itemRoutes);
 app.use('/api/borrows', borrowRoutes);
 app.use('/api/auth', authRoutes);
 
+// Start Server
 async function startServer() {
   try {
-    // Jangan hapus database setiap server dijalankan
-    await db.sync({ alter: true });
+    // Koneksi database
+    await db.authenticate();
     console.log('Database berhasil terhubung.');
 
+    // Sinkronisasi tabel
+    await db.sync({ alter: true });
+
     // =========================
-    // Seed Barang (hanya sekali)
+    // Seed Barang (sekali saja)
     // =========================
     const totalItem = await Item.count();
 
@@ -53,7 +60,7 @@ async function startServer() {
     }
 
     // =========================
-    // Seed User (hanya sekali)
+    // Seed User (sekali saja)
     // =========================
     const totalUser = await User.count();
 
@@ -79,11 +86,13 @@ async function startServer() {
       console.log('Akun awal berhasil dibuat.');
     }
 
-    app.listen(PORT, () => {
-      console.log(`Server running: http://localhost:${PORT}`);
+    // Jalankan server
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server running on port ${PORT}`);
     });
   } catch (error) {
     console.error('Gagal menjalankan server:', error);
+    process.exit(1);
   }
 }
 
