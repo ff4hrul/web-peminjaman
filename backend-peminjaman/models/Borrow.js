@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const db = require('../config/database');
+const db = require('../Config/database');
 
 const Borrow = db.define('Borrow', {
   borrower: { type: DataTypes.STRING, allowNull: false },
