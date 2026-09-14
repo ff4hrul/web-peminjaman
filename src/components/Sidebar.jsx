@@ -79,3 +79,4 @@ export default function Sidebar({ currentPage, setCurrentPage, user, onLogout })
     </aside>
   );
 }
+

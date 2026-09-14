@@ -6,7 +6,7 @@ import ConfirmDialog from '../components/ConfirmDialog';
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ManageItems({ items, refreshItems }) {
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token');
 
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('Semua');
@@ -294,3 +294,4 @@ export default function ManageItems({ items, refreshItems }) {
     </>
   );
 }
+

@@ -36,8 +36,8 @@ export default function Login({ onLogin }) {
       }
 
       // Simpan token & user
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      sessionStorage.setItem('token', data.token);
+      sessionStorage.setItem('user', JSON.stringify(data.user));
 
       onLogin(data.user);
     } catch (error) {
@@ -101,3 +101,4 @@ export default function Login({ onLogin }) {
     </div>
   );
 }
+

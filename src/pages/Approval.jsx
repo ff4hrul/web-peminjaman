@@ -5,7 +5,7 @@ import { CheckCircle } from 'lucide-react';
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Approval({ borrowHistory, refresh }) {
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token');
 
   const pending = borrowHistory.filter((item) => item.status === 'Menunggu');
 
@@ -90,3 +90,4 @@ export default function Approval({ borrowHistory, refresh }) {
     </div>
   );
 }
+

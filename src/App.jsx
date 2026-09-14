@@ -21,11 +21,11 @@ export default function App() {
   const [borrowHistory, setBorrowHistory] = useState([]);
 
   // ==========================
-  // Ambil user dari LocalStorage
+  // Ambil user dari sessionStorage
   // ==========================
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
+    const savedUser = sessionStorage.getItem('user');
+    const token = sessionStorage.getItem('token');
 
     if (savedUser && token) {
       setUser(JSON.parse(savedUser));
@@ -55,7 +55,7 @@ export default function App() {
   // Fetch Riwayat
   // ==========================
   const fetchHistory = async () => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
 
     try {
       const res = await fetch(`${API_URL}/borrows`, {
@@ -86,7 +86,7 @@ export default function App() {
   // Ajukan Pinjam
   // ==========================
   const handleBorrow = async (itemId, duration) => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
 
     try {
       const res = await fetch(`${API_URL}/borrows`, {
@@ -119,7 +119,7 @@ export default function App() {
   // Kembalikan Barang
   // ==========================
   const handleReturn = async (id) => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
 
     try {
       const res = await fetch(`${API_URL}/borrows/return/${id}`, {
@@ -148,7 +148,7 @@ export default function App() {
   // Approve Peminjaman (ADMIN)
   // ==========================
   const handleApprove = async (id) => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
 
     try {
       const res = await fetch(`${API_URL}/borrows/approve/${id}`, {
@@ -177,8 +177,8 @@ export default function App() {
   // Logout
   // ==========================
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
 
     setUser(null);
     setCurrentPage('dashboard');
@@ -222,3 +222,4 @@ export default function App() {
     </div>
   );
 }
+

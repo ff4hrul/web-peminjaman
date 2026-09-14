@@ -28,3 +28,4 @@ export default function ConfirmDialog({ open, title, message, onConfirm, onCance
     </div>
   );
 }
+
